@@ -100,3 +100,10 @@ Push image lên Docker Registry
 docker push 172.16.10.109:5000/centos:latest
 ```
 
+## Docker Engine
+
+Docker Engine là công cụ Clinet - Server hỗ trợ công nghệ container để xử lý các nhiệm vụ và quy trình công việc liên quan đến việc xây dựng các ứng dụng dựa trên container. Engine taoh ra 1 quy trình daemon phía máy chủ lưu trữ images, containers, networks và storage volumes. Daemon cũng cung cấp giao diện dòng lệnh qua phía máy khác (CLI) cho phép người dùng tương tác với daemon thông qua giao diện lập trình ứng dụng Docker
+
+## Distribution tools
+
+Là công cụ phân tán giúp chúng ta lưu trữ và quản lý các Docker image như: Docker Registry, Docker Trusted Registry, Docker Hub
