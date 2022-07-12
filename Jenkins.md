@@ -86,3 +86,5 @@ Role ở đây bao gồm:
 
 Để gán quyền hạn cho 1 đối tượng User, truy cập `Assign Roles`
 
+## Pipeline
+
