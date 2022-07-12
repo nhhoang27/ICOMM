@@ -1,3 +1,3 @@
 # ICOMM
 
-<img src="./Images/bt.png" alt="Lab" />
+<img src="./Images/bt.jpg" alt="Lab" />
