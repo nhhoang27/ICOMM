@@ -211,3 +211,14 @@ spec:
 
 <img src="./Images/ingress.png" alt="" width="800"/>
 
+## Volume: gắn disk storage vào container
+
+Volume là một mount point từ hệ thống file của server vào bên trong container.
+Các loại volume được chia làm 3 loại chính :
+- Volume dùng để chia sẻ dữ liệu giữa các container trong Pod
+- Volume đính kèm vào trong filesystem một node
+- Volume đính kèm vào cluster và các node khác nhau có thể truy cập
+
+### Sử dụng emptyDir volume để share data giữ các containers
+
+emptyDir là loại volume đơn giản nhất, nó sẽ tạo ra một empty directory bên trong Pod, các container trong một Pod có thể ghi dữ liệu vào bên trong nó. Volume chỉ tồn tại trong một lifecycle của Pod, dữ liệu trong loại volume này chỉ được lưu trữ tạm thời và sẽ mất đi khi Pod bị xóa. Ta dùng loại volume này khi ta chỉ muốn các container có thể chia sẻ dữ liệu lẫn nhau và không cần lưu trữ dữ liệu lại. Ví dụ là dữ liệu log từ một thằng container chạy web API, và ta có một thằng container khác sẽ truy cập vào log đó để xử lý log.

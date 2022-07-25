@@ -135,3 +135,14 @@ Slave là 1 hoặc nhiều máy tính với môi trường khác nhau, OS khác 
 
 Mọi request sẽ được gửi tới jenkins. từ đó nó sẽ phân bổ tới các slave tương ứng (nếu có) để thực thi nhiệm vụ. Một khi nhiệm vụ hoàn thành, slave sẽ report lại jenkins với kết quả tương ứng
 Việc kết nối giữa slave <--> jenkins sẽ thông qua 1 chương trình chạy ta gọi là `slave agent`, nhằm nhận sự ủy quyền, chạy các task vụ/command được gửi từ jenkins trên console backgroud của slave,...
+
+
+## Uninstall Kubectl, Kubeadm, Kubelet
+
+```
+kubeadm reset
+sudo apt-get purge kubeadm kubectl kubelet kubernetes-cni kube*   
+sudo apt-get autoremove  
+sudo rm -rf ~/.kube
+```
+
