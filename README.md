@@ -1,3 +1,6 @@
-# ICOMM
+# Tìm hiểu về Loadbalancer
 
-<img src="./Images/bt.jpg" alt="Lab" />
+# HPA - Horizontal Pod Autoscaling
+# Stateful/Stateless
+
+# Helm chart
