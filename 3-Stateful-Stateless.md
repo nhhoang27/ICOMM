@@ -50,3 +50,49 @@ Khi ta scale up Pod trong StatefulSets, thì sẽ có 1 Pod và 1 PersistentVolu
 
 <img src="./Images/statefulSets-Pod-PersistentVolumeClaims.png" alt="statefulSets-Pod-PersistentVolumeClaims" width="800" />
 
+### Sử dụng trong các trường hợp
+
+- Các dịch vụ dữ liệu (Database, lưu trữ key-value,...)
+- Các hệ thống nhạy cảm với việc định danh (consensus-systems, leader-election clustering, ...)
+- Bất cứ kiến trúc nào cần việc slow roll-out và liên kết theo cụm
+
+### Tạo file statefulSet.yaml
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: nginx
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  serviceName: "nginx"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: nginx
+        image: k8s.gcr.io/nginx-slim:0.8
+        ports:
+        - containerPort: 80
+          name: web
+```

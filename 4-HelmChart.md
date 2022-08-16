@@ -4,6 +4,12 @@ Helm là 1 trình quản lý gói ứng dụng cho k8s, điều phối tải xu�
 
 Helm giúp quản lý việc triển khai các ứng dụng dễ dàng hơn trong k8s bằng cách sử dụng các template được làm sẵn. Tất cả Helm đều có cấu trúc giống nhau nhưng có thể linh hoạt chạy bất cứ ứng dụng nào trên k8s
 
+## Lợi ích của Helm Chart
+
+Mục đích của nó là làm cho toàn bộ quá trình thiết lập việc triển khai 1 ứng dụng hoặc 1 môi trường cho nhiều mục đích trở nên dễ dàng hơn. Nhiều tác vụ thủ công có thể hoàn toàn tự động, giúp đơn giản hóa việc sử dụng k8s hơn.
+
+Helm linh hoạt dựa vào file value.yaml. Ta vào dile value.yaml để dễ dàng thực hiện việc bảo trì
+
 ## Cài đặt Helm CLI
 
 ```

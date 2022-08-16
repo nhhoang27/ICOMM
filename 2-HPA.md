@@ -1,8 +1,14 @@
 # HPA - Horizontal Pod Autoscaling
 
+## Auto Scaling Pod là gì ?
+
+Là quá trình thực hiện tăng số lượng pod trong 1 node lên 1 số lượng đã được định sẵn. Quá trình này được thực hiện khi xảy ra 1 hoặc nhiều sự kiện, VD: CPU đạt trên 70%, số lượng request đến server lớn hơn 500 req/s
+
+## Auto Scaling để làm gì ?
+
 HPA đem lại lợi ích: kinh tế, tự động hóa việc tăng giảm cấu hình hệ thống phù hợp với các hệ thống có khối lượng tải (mức enduser) biến đổi nhiều và khó dự đoán
 
-So với mô hình "truyền thống" kiểu fix cứng số lượng các Pods, auto scaling thích ứng để phù hợp với nhu cầu sử dụng. VD, khi lượng truy cập vào hệ thống vào buổi đêm giảm xuống, các Pods có thể được set vào sleep mode (sleep mode để dễ dàng bật lại ngay đối phó với sự tăng bất lường từ lượng truy cập)
+So với mô hình "truyền thống" kiểu fix cứng số lượng các Pods, auto scaling thích ứng để phù hợp với nhu cầu sử dụng. VD: khi lượng truy cập vào hệ thống vào buổi đêm giảm xuống, các Pods có thể được set vào sleep mode (sleep mode để dễ dàng bật lại ngay đối phó với sự tăng bất lường từ lượng truy cập)
 
 ## Metrics Server
 
@@ -15,6 +21,15 @@ Các bước trên sơ đồ:
 2. Các metrics này sẽ được đẩy đến `kubelet`
 3. Metrics Server thu thập metrics qua `kubelet`
 4. Metrics được đẩy đến API server, HPA sẽ gọi API này để lấy các metrics, tính toán để scale pods
+
+## Ưu điểm
+
+- Tích hợp sẵn nên tối ưu nhất cho các thành phần k8s
+- Thực hiện scale nhanh chóng
+
+## Nhược điểm
+
+- Chỉ hỗ trợ 1 vài metric cơ bản (CPU, ram, ...)
 
 Cài đặt Metrics Server:
 ```
@@ -67,6 +82,7 @@ Khi `ban điều hành` HPA tăng số lượng Pod, thì node cũng cần phả
 `Cluster Auto-Scaler` sẽ điều chỉnh tự động kích thước của Kubernetes cluster (hay số nodes) khi một trong các điều kiện sau thỏa mãn:
 - Một số Pods run bị fail trong cluster do lý do không đủ tài nguyên
 - Có node trong cluster không được sử dụng hết công suất, các Pods của nó có thể vận hành được trên các node khác mà có tài nguyên đang dư giả
+
 <img src="./Images/cluster-autoscaler.png" alt="describe-pod-metrics" width="800" />
 
 ## Cấu hình Autoscanling với HPA
@@ -83,7 +99,7 @@ spec:
   selector:
     matchLabels:
       run: php-apache
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -133,3 +149,71 @@ Màn hình còn lại:
 ```
 kubectl get hpa php-apache --watch
 ```
+
+## Sử dụng KEDA để auto scale pod k8s
+
+KEDA - Kubernetes-based Event Driven Autoscaler.
+
+### KEDA hoạt động như thế nào?
+
+Hoạt động với vai trò như 1 metric server biên dịch các metric nhận được từ external server về cấu trúc của HPA có thể hiểu được để tiến hành Scale qua HPA.
+
+KEDA có 1 khái niệm ScaledObject, khi tạo ScaleObject cũng sẽ tạo thêm 1 HPA để thực hiện việc scale pod.
+
+Cài đặt bằng Helm :
+```
+helm repo add kedacore https://kedacore.github.io/charts
+helm repo update
+kubectl create namespace keda
+helm install keda kedacore/keda --namespace keda
+```
+
+Cài đặt bằng yaml file:
+```
+kubectl apply -f https://github.com/kedacore/keda/releases/download/v2.4.0/keda-2.4.0.yaml
+```
+
+Tạo Scaled Object:
+```
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: prometheus-scale
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: appdeploy (1)
+  minReplicaCount: 3 (2)
+  maxReplicaCount: 10 (3)
+  triggers:
+  - type: prometheus (4)
+    metadata:
+      serverAddress: http://103.56.156.199:9090/ (5)
+      metricName: total_http_request (6)
+      threshold: '60' (7)
+      query: sum(irate(by_path_counter_total{}[60s])) (8)
+```
+
+(1): Tên Deployment muốn scale
+
+(2): Số lượng pod nhỏ nhất
+
+(3): Số lượng pod lớn nhất
+
+(4): Kiểu external Server
+
+(5): Địa chỉ external Server
+
+(6): Tên metric
+
+(7): Giá trị sẽ gọi event (ở đây nếu số req/s > 60)
+
+(8): Câu query lấy dữ liệu từ external Server
+
+### Ưu điểm
+
+- Hỗ trợ nhiều loại metrics khác nhau
+
+### Nhược điểm
+
+- Sẽ tốn 1 phần tài nguyên để chạy các thành phần của KEDA.

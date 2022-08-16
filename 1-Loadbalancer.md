@@ -61,11 +61,40 @@ spec:
       nodePort: 31000
 ```
 
-## LoadBalancer
+Nhược điểm của phương pháp này:
+- Chỉ có thể có 1 service cho mỗi cổng
+- Nếu địa chỉ IP Node / VM của bạn thay đổi, bạn cần giải quyết
+
+## LoadBalancer (Cân bằng tải)
 
 Khi chạy k8s trên cloud, nó sẽ hỗ trợ LoadBalancer Service, nếu bạn chạy trên môi trường không có hỗ trợ LoadBanlancer thì sẽ không thể tạo được loại service này. Khi tạo LoadBanlancer, nó sẽ tự tạo 1 public IP.
 
 <img src="./Images/loadBalancer.png" alt="loadBalancer" width="800" />
+
+VD:
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 32143
+  clusterIP: 130.211.97.55
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:
+    - ip: 130.211.53.173
+```
+
+Nếu loadBalancerIP không được chỉ định, loadBalancer được thiết lập với 1 địa chỉ IP tạm thời.
+
+Nhược điểm của LoadBalancer : Mỗi service bạn sử dụng loadBalancer sẽ nhận được địa chỉ IP riêng và phải trả tiền cho mỗi LoadBalancer cho mỗi service được expose.
 
 ## Ingress resource
 
